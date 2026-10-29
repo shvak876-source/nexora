@@ -1,6 +1,7 @@
 import { Header, Hero, Marquee, Stats } from "@/components/site/hero";
 import { Faq, ProblemPicker, Process, Promise, Services } from "@/components/site/sections";
 import { Contact, Footer, MobileBar } from "@/components/site/contact";
+import { ScrollHighlight, ScrollProgress } from "@/components/site/motion";
 
 export default function Home() {
   return (
@@ -11,11 +12,13 @@ export default function Home() {
       >
         דלגו לתוכן
       </a>
+      <ScrollProgress />
       <Header />
       <main id="top">
         <Hero />
         <Marquee />
         <Stats />
+        <ScrollHighlight text="לא מוכרים לכם טכנולוגיה. בונים לכם כלי עבודה שחוסך זמן ומכניס כסף." glowFrom={8} />
         <Services />
         <ProblemPicker />
         <Process />

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView, useReducedMotion } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { WordsReveal } from "./motion";
 
 export function Reveal({
   children,
@@ -49,7 +50,8 @@ export function SectionHead({
   align = "center",
 }: {
   badge: string;
-  title: React.ReactNode;
+  /** Words wrapped in *asterisks* get the glow gradient. */
+  title: string;
   text?: string;
   className?: string;
   align?: "center" | "start";
@@ -57,7 +59,9 @@ export function SectionHead({
   return (
     <Reveal className={cn("mb-14 grid gap-5", align === "center" ? "mx-auto max-w-3xl justify-items-center text-center" : "max-w-2xl", className)}>
       <Badge>{badge}</Badge>
-      <h2 className="font-display text-[clamp(34px,5.2vw,64px)] leading-[1.05] font-black tracking-tight text-balance">{title}</h2>
+      <h2 className="font-display text-[clamp(34px,5.2vw,64px)] leading-[1.05] font-black tracking-tight text-balance">
+        <WordsReveal text={title} />
+      </h2>
       {text && <p className="max-w-[58ch] text-lg text-muted-foreground sm:text-xl">{text}</p>}
     </Reveal>
   );

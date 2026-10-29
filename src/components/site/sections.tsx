@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 
 import { AppWindow, ArrowLeft, BarChart3, Check, Eye, KeyRound, Lock, MessageCircle, RefreshCw, ShieldCheck, Smartphone } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
 import { Aurora, GlowCard, Reveal, SectionHead } from "./primitives";
+import { HorizontalScroll, StackCards, Tilt } from "./motion";
 import { commitments, faq, monthly, services, steps, tickets } from "@/content";
 import { cn } from "@/lib/utils";
 
@@ -140,37 +141,41 @@ export function Services() {
       <div className={wrap}>
         <SectionHead
           badge="מה אנחנו בונים"
-          title={
-            <>
-              שלושה תחומים. <span className="text-glow">עסק אחד שמחובר.</span>
-            </>
-          }
+          title="שלושה תחומים. *עסק* *אחד* *שמחובר.*"
           text="אפשר להתחיל מאחד ולהוסיף בהמשך. האתר מכניס פניות, המערכת מנהלת אותן והאפליקציה שומרת את הלקוחות קרובים."
         />
         <div className="grid gap-4 md:grid-cols-6">
           <Reveal className="md:col-span-4">
+            <Tilt className="h-full">
             <GlowCard beam className="h-full px-7 pt-7 sm:px-9 sm:pt-9">
               <CardText icon={AppWindow} title={web.title} text={web.text} points={web.points} />
               <BrowserVisual />
             </GlowCard>
+            </Tilt>
           </Reveal>
           <Reveal className="md:col-span-2" delay={0.08}>
+            <Tilt className="h-full">
             <GlowCard className="h-full px-7 pt-7">
               <CardText icon={Smartphone} title={app.title} text={app.text} />
               <PhoneVisual />
             </GlowCard>
+            </Tilt>
           </Reveal>
           <Reveal className="md:col-span-3">
+            <Tilt className="h-full">
             <GlowCard className="h-full p-7 sm:p-9">
               <CardText icon={BarChart3} title={system.title} text={system.text} />
               <ChartVisual />
             </GlowCard>
+            </Tilt>
           </Reveal>
           <Reveal className="md:col-span-3" delay={0.08}>
+            <Tilt className="h-full">
             <GlowCard className="h-full p-7 sm:p-9">
               <CardText icon={MessageCircle} title="אוטומציות וואטסאפ" text="תזכורות, אישורי הגעה והודעות ללקוחות יוצאים לבד, בזמן הנכון." />
               <ChatVisual />
             </GlowCard>
+            </Tilt>
           </Reveal>
         </div>
       </div>
@@ -201,11 +206,7 @@ export function ProblemPicker() {
       <div className={cn(wrap, "relative")}>
         <SectionHead
           badge="מתחילים מהבעיה"
-          title={
-            <>
-              מה <span className="text-glow">תוקע</span> אתכם היום?
-            </>
-          }
+          title="מה *תוקע* אתכם היום?"
           text="בחרו את המשפט שהכי מתאים לעסק שלכם, ותראו מה היינו בונים וכמה זמן זה לוקח."
         />
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)]">
@@ -304,53 +305,89 @@ export function ProblemPicker() {
   );
 }
 
-/* ---------------- Process: vertical timeline with a scroll-driven beam ---------------- */
+/* ---------------- Process: sideways pinned scroll on desktop, glowing timeline on mobile ---------------- */
+
+function StepCard({ s, i }: { s: (typeof steps)[number]; i: number }) {
+  return (
+    <GlowCard className="relative h-full p-8">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-6 end-4 font-display text-[150px] leading-none font-black text-white/[0.04] select-none"
+      >
+        {i + 1}
+      </span>
+      <span className="grid size-14 place-items-center rounded-full border border-white/15 bg-background font-display text-xl font-black text-primary shadow-[0_0_30px_-6px_var(--blue)]">
+        {i + 1}
+      </span>
+      <span className="mt-6 block text-sm font-bold text-primary">{s.when}</span>
+      <h3 className="mt-1 font-display text-[28px] font-extrabold">{s.title}</h3>
+      <p className="mt-3 text-[17px] text-muted-foreground">{s.text}</p>
+    </GlowCard>
+  );
+}
 
 export function Process() {
   const ref = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 55%"] });
   const scaleY = useSpring(scrollYProgress, { stiffness: 140, damping: 30 });
   return (
-    <section id="process" className={section}>
+    <section id="process" className="relative pt-[clamp(80px,11vw,140px)] lg:pb-0">
       <div className={wrap}>
         <SectionHead
           badge="איך זה עובד"
-          title={
-            <>
-              מהשיחה הראשונה <span className="text-glow">ועד שזה עובד</span>
-            </>
-          }
+          title="מהשיחה הראשונה *ועד* *שזה* *עובד*"
           text="ארבעה שלבים, בלי הפתעות. בכל שלב אתם יודעים איפה הפרויקט עומד ומה הצעד הבא."
+          className="lg:mb-0"
         />
-        <ol ref={ref} className="relative mx-auto grid max-w-4xl gap-6 md:gap-0">
-          <span aria-hidden className="absolute inset-y-0 start-[27px] w-px bg-white/10 md:start-1/2" />
+      </div>
+
+      <div className="hidden lg:block">
+        <HorizontalScroll>
+          {steps.map((s, i) => (
+            <div key={s.title} className="w-[440px] shrink-0">
+              <StepCard s={s} i={i} />
+            </div>
+          ))}
+          <div className="grid w-[440px] shrink-0 content-center gap-5 rounded-3xl border border-dashed border-white/15 p-8">
+            <h3 className="font-display text-[30px] leading-tight font-black">
+              הצעד הראשון <span className="text-glow">לוקח 20 דקות.</span>
+            </h3>
+            <p className="text-muted-foreground">שיחת ייעוץ בלי עלות ובלי התחייבות.</p>
+            <a href="#contact" className="shimmer inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-accent px-6 font-bold text-on-accent">
+              לקביעת שיחה
+              <ArrowLeft aria-hidden className="size-[18px]" />
+            </a>
+          </div>
+        </HorizontalScroll>
+      </div>
+
+      <div className={cn(wrap, "pb-[clamp(80px,11vw,140px)] lg:hidden")}>
+        <ol ref={ref} className="relative grid gap-6">
+          <span aria-hidden className="absolute inset-y-0 start-[27px] w-px bg-white/10" />
           <motion.span
             aria-hidden
             style={{ scaleY }}
-            className="absolute inset-y-0 start-[27px] w-px origin-top bg-gradient-to-b from-cyan via-violet to-accent shadow-[0_0_14px_1px_var(--violet)] md:start-1/2"
+            className="absolute inset-y-0 start-[27px] w-px origin-top bg-gradient-to-b from-cyan via-violet to-accent shadow-[0_0_14px_1px_var(--violet)]"
           />
-          {steps.map((s, i) => {
-            const left = i % 2 === 1;
-            return (
-              <Reveal as="li" key={s.title} className="relative grid grid-cols-[56px_1fr] gap-5 md:grid-cols-2 md:gap-14 md:py-6">
-                <span className="relative z-10 grid size-14 place-items-center rounded-full border border-white/15 bg-background font-display text-xl font-black text-primary shadow-[0_0_30px_-6px_var(--blue)] md:absolute md:start-1/2 md:top-1/2 md:translate-x-1/2 md:-translate-y-1/2">
-                  {i + 1}
-                </span>
-                <GlowCard className={cn("p-6 sm:p-7", left ? "md:col-start-2" : "md:col-start-1")}>
-                  <span className="text-sm font-bold text-primary">{s.when}</span>
-                  <h3 className="mt-1 font-display text-2xl font-extrabold">{s.title}</h3>
-                  <p className="mt-2 text-[17px] text-muted-foreground">{s.text}</p>
-                </GlowCard>
-              </Reveal>
-            );
-          })}
+          {steps.map((s, i) => (
+            <Reveal as="li" key={s.title} className="relative grid grid-cols-[56px_1fr] gap-5">
+              <span className="relative z-10 grid size-14 place-items-center rounded-full border border-white/15 bg-background font-display text-xl font-black text-primary shadow-[0_0_30px_-6px_var(--blue)]">
+                {i + 1}
+              </span>
+              <GlowCard className="p-6">
+                <span className="text-sm font-bold text-primary">{s.when}</span>
+                <h3 className="mt-1 font-display text-2xl font-extrabold">{s.title}</h3>
+                <p className="mt-2 text-[17px] text-muted-foreground">{s.text}</p>
+              </GlowCard>
+            </Reveal>
+          ))}
         </ol>
       </div>
     </section>
   );
 }
 
-/* ---------------- Promise: commitments + monthly care ---------------- */
+/* ---------------- Promise: commitments as stacking cards + monthly care ---------------- */
 
 const commitIcons = { lock: Lock, key: KeyRound, eye: Eye, refresh: RefreshCw, chat: MessageCircle, shield: ShieldCheck };
 
@@ -358,32 +395,37 @@ export function Promise() {
   return (
     <section className={section}>
       <div className={wrap}>
-        <SectionHead
-          badge="למה אנחנו"
-          title={
-            <>
-              מתחייבים <span className="text-glow">בכתב.</span>
-            </>
-          }
-          text="לא מוכרים לכם טכנולוגיה. בונים כלי עבודה שחוסך זמן ומכניס כסף."
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {commitments.map((c, i) => {
-            const Icon = commitIcons[c.icon];
-            return (
-              <Reveal key={c.title} delay={(i % 3) * 0.07}>
-                <GlowCard className="h-full p-7">
-                  <span className="grid size-11 place-items-center rounded-xl bg-gradient-to-br from-blue/25 to-violet/25 text-primary ring-1 ring-white/10">
-                    <Icon aria-hidden className="size-5" />
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+          <SectionHead
+            align="start"
+            className="mb-0 lg:sticky lg:top-32"
+            badge="למה אנחנו"
+            title="מתחייבים *בכתב.*"
+            text="כל אחד מהדברים האלה נכנס להצעה שאתם חותמים עליה."
+          />
+          <StackCards
+            items={commitments.map((c, i) => {
+              const Icon = commitIcons[c.icon];
+              return (
+                <div
+                  key={c.title}
+                  className="relative flex min-h-[200px] items-start gap-5 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1020] p-7 shadow-[0_-20px_60px_-30px_rgb(0_0_0/0.9)] sm:p-9"
+                >
+                  <div aria-hidden className="pointer-events-none absolute -end-20 -top-20 size-60 rounded-full bg-violet/15 blur-[60px]" />
+                  <span className="relative grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-blue/30 to-violet/30 text-primary ring-1 ring-white/10">
+                    <Icon aria-hidden className="size-6" />
                   </span>
-                  <h3 className="mt-5 text-xl font-extrabold">{c.title}</h3>
-                  <p className="mt-2 text-[17px] text-muted-foreground">{c.text}</p>
-                </GlowCard>
-              </Reveal>
-            );
-          })}
+                  <div className="relative">
+                    <span className="font-mono text-sm text-muted-foreground">0{i + 1}</span>
+                    <h3 className="mt-1 font-display text-2xl font-extrabold sm:text-[28px]">{c.title}</h3>
+                    <p className="mt-2 text-[17px] text-muted-foreground">{c.text}</p>
+                  </div>
+                </div>
+              );
+            })}
+          />
         </div>
-        <Reveal className="mt-4">
+        <Reveal className="mt-16">
           <div className="glass beam relative overflow-hidden rounded-3xl p-8 sm:p-10">
             <Aurora intensity={0.35} />
             <div className="relative grid items-center gap-6 lg:grid-cols-[auto_1fr] lg:gap-12">

@@ -5,6 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { Bell, Check, CreditCard, TrendingUp } from "lucide-react";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { Aurora, Badge, CtaButton, Logo, NumberTicker, Reveal } from "./primitives";
+import { Magnetic, VelocityRow } from "./motion";
 import { nav, stats, tech, ticker } from "@/content";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,10 @@ export function Hero() {
   const { scrollYProgress } = useScroll({ target: stage, offset: ["start end", "start 25%"] });
   const rotateX = useTransform(scrollYProgress, [0, 1], [reduced ? 0 : 28, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [reduced ? 1 : 0.9, 1]);
+  const { scrollY } = useScroll();
+  const copyY = useTransform(scrollY, [0, 600], [0, reduced ? 0 : -110]);
+  const copyOpacity = useTransform(scrollY, [0, 500], [1, reduced ? 1 : 0.15]);
+  const auroraScale = useTransform(scrollY, [0, 800], [1, reduced ? 1 : 1.35]);
   const enter = (i: number) =>
     reduced
       ? {}
@@ -61,7 +66,9 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-36 pb-10 sm:pt-44">
-      <Aurora className="h-[900px]" />
+      <motion.div aria-hidden style={{ scale: auroraScale }} className="pointer-events-none absolute inset-x-0 top-0 h-[900px] origin-top">
+        <Aurora />
+      </motion.div>
       {/* 21st.dev Interactive Grid: cells light up under the pointer */}
       <InteractiveGrid
         cellSize={56}
@@ -74,6 +81,7 @@ export function Hero() {
       />
 
       <div className="relative mx-auto grid max-w-[1180px] justify-items-center px-4 text-center sm:px-6">
+        <motion.div style={{ y: copyY, opacity: copyOpacity }} className="grid justify-items-center">
         <motion.div {...enter(0)}>
           <Badge dot>אתרים · אפליקציות · מערכות ניהול לעסקים</Badge>
         </motion.div>
@@ -89,7 +97,9 @@ export function Hero() {
           ובלי הפתעות.
         </motion.p>
         <motion.div {...enter(3)} className="mt-9 flex flex-wrap justify-center gap-3.5">
-          <CtaButton href="#contact">לשיחת ייעוץ חינם</CtaButton>
+          <Magnetic>
+            <CtaButton href="#contact">לשיחת ייעוץ חינם</CtaButton>
+          </Magnetic>
           <CtaButton href="#services" variant="glass" arrow={false}>
             מה אנחנו בונים
           </CtaButton>
@@ -102,6 +112,7 @@ export function Hero() {
             </li>
           ))}
         </motion.ul>
+        </motion.div>
 
         {/* product stage: tilts flat as it scrolls into view */}
         <div ref={stage} className="relative mt-20 w-full max-w-[980px] [perspective:1400px]">
@@ -244,9 +255,9 @@ function DashboardMock() {
   );
 }
 
-function MarqueeRow({ items, reverse, speed }: { items: string[]; reverse?: boolean; speed: number }) {
-  const list = (hidden?: boolean) => (
-    <ul aria-hidden={hidden} className="flex shrink-0 gap-3 pe-3">
+function Pills({ items }: { items: string[] }) {
+  return (
+    <ul className="flex shrink-0 gap-3 pe-3">
       {items.map((t) => (
         <li key={t} className="glass rounded-full px-5 py-2.5 text-[15px] font-semibold whitespace-nowrap text-foreground/85 sm:text-base">
           {t}
@@ -254,26 +265,21 @@ function MarqueeRow({ items, reverse, speed }: { items: string[]; reverse?: bool
       ))}
     </ul>
   );
-  return (
-    <div
-      className="flex w-max group-hover:[animation-play-state:paused]"
-      style={{ animation: `${reverse ? "marquee-rev" : "marquee"} ${speed}s linear infinite` }}
-    >
-      {list()}
-      {list(true)}
-    </div>
-  );
 }
 
 export function Marquee() {
   return (
-    <section aria-label="מה אנחנו בונים ועם מה" className="group relative py-14">
+    <section aria-label="מה אנחנו בונים ועם מה" className="relative py-14">
       <Reveal className="mb-7 text-center text-sm font-semibold tracking-wide text-muted-foreground">
         מה אנחנו בונים, ועם אילו כלים
       </Reveal>
       <div className="grid gap-3 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
-        <MarqueeRow items={ticker} speed={45} />
-        <MarqueeRow items={tech} speed={38} reverse />
+        <VelocityRow baseVelocity={2}>
+          <Pills items={ticker} />
+        </VelocityRow>
+        <VelocityRow baseVelocity={-2.4}>
+          <Pills items={tech} />
+        </VelocityRow>
       </div>
     </section>
   );

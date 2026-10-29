@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Loader2, Phone, Send } from "lucide-react";
 import { Aurora, Badge, Logo, Reveal } from "./primitives";
+import { ClipReveal, Parallax } from "./motion";
 import { contact, nav, needs } from "@/content";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +65,9 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative overflow-hidden py-[clamp(80px,11vw,140px)]">
-      <Aurora intensity={0.7} />
+      <ClipReveal className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,#151a3a,#070912_70%)]">
+        <Aurora intensity={0.8} />
+      </ClipReveal>
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
       <div className="relative mx-auto grid max-w-[1180px] items-start gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <Reveal className="grid gap-6 lg:sticky lg:top-28">
@@ -231,12 +234,14 @@ export function Footer() {
         </nav>
         <span className="text-[15px] text-muted-foreground">© 2026 Nexora</span>
       </div>
+      <Parallax offset={50}>
       <div
         aria-hidden
         className="pointer-events-none -mb-[0.22em] text-center font-display text-[clamp(80px,19vw,300px)] leading-none font-black tracking-tight select-none bg-linear-to-b from-white/15 to-transparent to-85% bg-clip-text text-transparent"
       >
         Nexora
       </div>
+      </Parallax>
     </footer>
   );
 }
