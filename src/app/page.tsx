@@ -2,6 +2,7 @@ import { Header, Hero, Marquee, Stats } from "@/components/site/hero";
 import { Faq, ProblemPicker, Process, Promise, Services } from "@/components/site/sections";
 import { Contact, Footer, MobileBar } from "@/components/site/contact";
 import { ScrollHighlight, ScrollProgress } from "@/components/site/motion";
+import { Connections } from "@/components/site/beams";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
         <Stats />
         <ScrollHighlight text="לא מוכרים לכם טכנולוגיה. בונים לכם כלי עבודה שחוסך זמן ומכניס כסף." glowFrom={8} />
         <Services />
+        <Connections />
         <ProblemPicker />
         <Process />
         <Promise />

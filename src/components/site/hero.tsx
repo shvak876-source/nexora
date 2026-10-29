@@ -6,6 +6,7 @@ import { Bell, Check, CreditCard, TrendingUp } from "lucide-react";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { Aurora, Badge, CtaButton, Logo, NumberTicker, Reveal } from "./primitives";
 import { Magnetic, VelocityRow } from "./motion";
+import { SilkBackground } from "./silk";
 import { nav, stats, tech, ticker } from "@/content";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +68,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden pt-36 pb-10 sm:pt-44">
       <motion.div aria-hidden style={{ scale: auroraScale }} className="pointer-events-none absolute inset-x-0 top-0 h-[900px] origin-top">
-        <Aurora />
+        <SilkBackground fallback={<Aurora />} />
       </motion.div>
       {/* 21st.dev Interactive Grid: cells light up under the pointer */}
       <InteractiveGrid
