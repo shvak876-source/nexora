@@ -1,6 +1,23 @@
 import type { Metadata, Viewport } from "next";
 import { Heebo, Noto_Sans_Hebrew } from "next/font/google";
 import "./globals.css";
+import { AccessibilityMenu, WhatsAppFab } from "@/components/site/floating";
+
+// Static hosting (GitHub Pages) cannot send security headers, so the policy ships as a
+// meta tag. Next.js inlines its bootstrap scripts, hence 'unsafe-inline'. Dev mode also
+// needs eval for hot reload, so the policy is production-only.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self' https://api.web3forms.com",
+  "form-action 'self' https://api.web3forms.com",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "upgrade-insecure-requests",
+].join("; ");
 
 const heading = Heebo({
   variable: "--font-heading",
@@ -34,8 +51,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl">
+      <head>
+        {process.env.NODE_ENV === "production" && <meta httpEquiv="Content-Security-Policy" content={CSP} />}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+      </head>
       <body className={`${heading.variable} ${body.variable} font-sans text-[17px] leading-relaxed antialiased sm:text-lg`}>
         {children}
+        <WhatsAppFab />
+        <AccessibilityMenu />
       </body>
     </html>
   );

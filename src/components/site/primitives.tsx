@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { animate, motion, useInView, useReducedMotion } from "motion/react";
+import { animate, motion, useInView } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WordsReveal } from "./motion";
+import { useReduced } from "@/lib/a11y";
 
 export function Reveal({
   children,
@@ -17,7 +18,7 @@ export function Reveal({
   delay?: number;
   as?: "div" | "li";
 }) {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const Tag = as === "li" ? motion.li : motion.div;
   return (
     <Tag
@@ -156,7 +157,7 @@ export function GlowCard({
 export function NumberTicker({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const [n, setN] = useState(reduced ? value : 0);
   useEffect(() => {
     if (!inView || reduced) return;

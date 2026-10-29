@@ -9,7 +9,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReduced } from "@/lib/a11y";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const EXIT_EASE = [0.4, 0, 1, 1] as const;
@@ -249,7 +250,7 @@ export function Accordion({
   headingLevel = 3,
   className = "",
 }: AccordionProps) {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
 
   const entries = useMemo(() => items.map(({ id }) => ({ id })), [items]);
 

@@ -123,7 +123,8 @@ export function SilkBackground({ className, fallback }: { className?: string; fa
     };
 
     const loop = () => {
-      if (visible && !document.hidden) draw(performance.now() - start);
+      const paused = document.documentElement.classList.contains("a11y-no-motion");
+      if (visible && !document.hidden && !paused) draw(performance.now() - start);
       raf = requestAnimationFrame(loop);
     };
 

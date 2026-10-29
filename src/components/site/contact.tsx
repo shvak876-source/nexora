@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Check, Loader2, Phone, Send } from "lucide-react";
 import { Aurora, Badge, Logo, Reveal } from "./primitives";
 import { ClipReveal, Parallax } from "./motion";
-import { contact, nav, needs } from "@/content";
+import { business, contact, nav, needs } from "@/content";
 import { cn } from "@/lib/utils";
 
 const field =
@@ -13,21 +14,25 @@ const field =
 type Status = "idle" | "sending" | "sent" | "wa" | "error";
 
 export function Contact() {
-  const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean }>({});
+  const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean; consent?: boolean }>({});
   const [status, setStatus] = useState<Status>("idle");
   const [waText, setWaText] = useState("");
   const [copied, setCopied] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
+  const consentRef = useRef<HTMLInputElement>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const v = (k: string) => String(f.get(k) ?? "").trim();
-    const next = { name: v("name").length < 2, phone: v("phone").replace(/\D/g, "").length < 9 };
+    // Honeypot: real visitors never see or fill this field.
+    if (v("website")) return setStatus("sent");
+    const next = { name: v("name").length < 2, phone: v("phone").replace(/\D/g, "").length < 9, consent: f.get("consent") !== "on" };
     setErrors(next);
     if (next.name) return nameRef.current?.focus();
     if (next.phone) return phoneRef.current?.focus();
+    if (next.consent) return consentRef.current?.focus();
 
     const text =
       "היי Nexora, אשמח לשיחת ייעוץ.\n" +
@@ -36,19 +41,30 @@ export function Contact() {
       `\nצריך: ${v("need")}` +
       (v("msg") ? `\nהבעיה: ${v("msg")}` : "");
 
-    if (!contact.formEndpoint) {
+    if (!contact.web3formsKey) {
       setWaText(text);
       setStatus("wa");
       return;
     }
     setStatus("sending");
     try {
-      const r = await fetch(contact.formEndpoint, {
+      const r = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ name: v("name"), phone: v("phone"), business: v("biz"), need: v("need"), message: v("msg") }),
+        body: JSON.stringify({
+          access_key: contact.web3formsKey,
+          subject: `פנייה חדשה מהאתר: ${v("name")}`,
+          from_name: "אתר Nexora",
+          "שם": v("name"),
+          "טלפון": v("phone"),
+          "עסק": v("biz") || "-",
+          "צריך": v("need"),
+          "הבעיה": v("msg") || "-",
+          "הסכמה למדיניות הפרטיות": "כן",
+        }),
       });
-      if (!r.ok) throw new Error();
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || data.success === false) throw new Error();
       setStatus("sent");
     } catch {
       setStatus("error");
@@ -110,7 +126,7 @@ export function Contact() {
           <form
             noValidate
             onSubmit={onSubmit}
-            className="glass beam grid gap-4 rounded-3xl bg-[#0a0e19]/70 p-[clamp(22px,3vw,36px)] shadow-[0_40px_120px_-30px_rgb(139_92_246/0.45)]"
+            className="glass beam relative grid gap-4 rounded-3xl bg-[#0a0e19]/70 p-[clamp(22px,3vw,36px)] shadow-[0_40px_120px_-30px_rgb(139_92_246/0.45)]"
           >
             <h3 className="font-display text-[28px] font-black">השאירו פרטים ונחזור אליכם</h3>
             <p className="-mt-2 text-base text-muted-foreground">ממלאים דקה, ואנחנו מתקשרים לתאם שיחת ייעוץ.</p>
@@ -135,7 +151,7 @@ export function Contact() {
                         לחצו כדי לשלוח לנו אותם בוואטסאפ
                       </a>
                     ) : (
-                      <span className="text-muted-foreground">(מצב הדגמה: עדיין לא הוגדר מספר וואטסאפ או כתובת לשליחת טפסים.)</span>
+                      <span className="text-muted-foreground">(מצב הדגמה: הטופס עדיין לא מחובר לתיבת דוא&quot;ל.)</span>
                     )}
                   </>
                 )}
@@ -174,6 +190,31 @@ export function Contact() {
                 <div className="grid gap-1.5">
                   <label htmlFor="f-msg" className="text-[15px] font-bold">ספרו בקצרה מה הבעיה</label>
                   <textarea id="f-msg" name="msg" rows={3} placeholder="למשל: אני מתאם את כל התורים בוואטסאפ ולקוחות שוכחים להגיע" className={cn(field, "min-h-24 resize-y")} />
+                </div>
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="absolute -start-[9999px] size-px opacity-0" />
+                <div className="grid gap-1.5">
+                  <label className="flex cursor-pointer items-start gap-3 text-[15px] leading-relaxed">
+                    <input
+                      ref={consentRef}
+                      type="checkbox"
+                      name="consent"
+                      required
+                      aria-invalid={!!errors.consent}
+                      aria-describedby="consent-note e-consent"
+                      className="mt-1 size-5 shrink-0 cursor-pointer accent-[var(--blue)]"
+                    />
+                    <span>
+                      קראתי ואני מסכים/ה ל
+                      <Link href="/privacy/" target="_blank" className="font-bold text-primary underline underline-offset-2">
+                        מדיניות הפרטיות
+                      </Link>
+                    </span>
+                  </label>
+                  {errors.consent && <span id="e-consent" className="text-sm font-semibold text-danger">כדי לשלוח צריך לאשר את מדיניות הפרטיות</span>}
+                  <p id="consent-note" className="text-[13px] leading-relaxed text-muted-foreground">
+                    הפרטים ישמשו רק כדי לחזור אליכם ולהכין הצעה. אין חובה חוקית למסור אותם, אבל בלי שם וטלפון לא נוכל לחזור אליכם. הפרטים
+                    מועברים לתיבת הדוא&quot;ל שלנו דרך שירות Web3Forms, ואפשר לבקש לעיין בהם, לתקן או למחוק אותם בכל עת.
+                  </p>
                 </div>
                 {status === "error" && <p role="alert" className="text-sm font-semibold text-danger">השליחה לא עברה. נסו שוב או התקשרו אלינו.</p>}
                 <button
@@ -233,6 +274,26 @@ export function Footer() {
           ))}
         </nav>
         <span className="text-[15px] text-muted-foreground">© 2026 Nexora</span>
+      </div>
+      <div className="mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/[0.06] px-4 py-6 text-sm text-muted-foreground sm:px-6">
+        <span>
+          {business.legalName ? business.legalName : business.name}
+          {business.registrationId && <> · ע.מ/ח.פ {business.registrationId}</>}
+          {business.address && <> · {business.address}</>}
+          {contact.email && (
+            <>
+              {" · "}
+              <a href={`mailto:${contact.email}`} dir="ltr" className="hover:text-foreground">
+                {contact.email}
+              </a>
+            </>
+          )}
+        </span>
+        <nav aria-label="מסמכים משפטיים" className="flex flex-wrap gap-x-5 gap-y-2 font-semibold">
+          <Link href="/privacy/" className="hover:text-foreground">מדיניות פרטיות</Link>
+          <Link href="/terms/" className="hover:text-foreground">תנאי שימוש</Link>
+          <Link href="/accessibility/" className="hover:text-foreground">הצהרת נגישות</Link>
+        </nav>
       </div>
       <Parallax offset={50}>
       <div

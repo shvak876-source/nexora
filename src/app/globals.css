@@ -140,10 +140,31 @@ body {
 
 @keyframes beam-flow { from { stroke-dashoffset: 0.22; } to { stroke-dashoffset: -1; } }
 @keyframes hub-ring { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes fab-ping { 75%, 100% { transform: scale(1.6); opacity: 0; } }
 @keyframes marquee { to { transform: translateX(50%); } }
 @keyframes marquee-rev { from { transform: translateX(50%); } to { transform: translateX(0); } }
 @keyframes float { 50% { transform: translateY(-10px); } }
 @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(52 211 153 / 0.6); } 100% { box-shadow: 0 0 0 10px rgb(52 211 153 / 0); } }
+
+/* ---------- accessibility menu ---------- */
+html.a11y-text-1 body { zoom: 1.1; }
+html.a11y-text-2 body { zoom: 1.22; }
+html.a11y-contrast {
+  --muted-foreground: #e2e8f0;
+  --border: rgb(255 255 255 / 0.45);
+  --primary: #93c5fd;
+}
+html.a11y-contrast .text-glow { background: none; color: #fde68a; filter: none; -webkit-text-fill-color: #fde68a; }
+html.a11y-contrast .text-fade { background: none; color: #fff; -webkit-text-fill-color: #fff; }
+html.a11y-contrast .glass { background: #000; backdrop-filter: none; }
+html.a11y-links a:not([data-fab]) { text-decoration: underline !important; text-underline-offset: 4px; }
+html.a11y-readable body, html.a11y-readable .font-display { font-family: Arial, "Arial Hebrew", sans-serif !important; letter-spacing: 0.01em; }
+html.a11y-no-motion *, html.a11y-no-motion *::before, html.a11y-no-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -153,3 +174,9 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- legal pages ---------- */
+.legal ul { display: grid; gap: 0.5rem; padding-inline-start: 1.25rem; list-style: disc; }
+.legal ul li::marker { color: var(--primary); }
+.legal a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+.legal b { color: var(--foreground); }

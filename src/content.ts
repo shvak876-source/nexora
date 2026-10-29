@@ -4,10 +4,25 @@ export const contact = {
   // Placeholder until the real number is set.
   phoneDisplay: "050-000-0000",
   phoneTel: "+972500000000",
-  // International format without "+", e.g. "972501234567". Empty = form shows a prepared message only.
+  // International format without "+", e.g. "972501234567". Empty = the floating button scrolls to the form.
   whatsappNumber: "",
-  // A form service URL (e.g. Formspree) that emails each lead. Empty = WhatsApp fallback.
-  formEndpoint: "",
+  whatsappText: "היי Nexora, אשמח לשמוע פרטים על בניית אתר / מערכת לעסק שלי.",
+  // Where leads arrive. Shown on the site and in the legal pages.
+  email: "",
+  // Web3Forms access key (public by design): each form submission is emailed to the inbox
+  // registered with the key. Empty = the form shows a prepared message instead of sending.
+  web3formsKey: "",
+};
+
+// Legal identity shown in the footer and the legal pages. Fill in before launch.
+export const business = {
+  name: "Nexora",
+  legalName: "", // e.g. "ישראל ישראלי" (עוסק מורשה) or a company name
+  registrationId: "", // ע.מ / ח.פ
+  address: "", // optional
+  accessibilityCoordinator: "", // name of the person handling accessibility requests
+  lastAccessibilityReview: "29.10.2026",
+  policiesUpdated: "29.10.2026",
 };
 
 export const nav = [

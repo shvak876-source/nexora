@@ -8,7 +8,6 @@ import {
   motion,
   useAnimationFrame,
   useMotionValue,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -16,6 +15,7 @@ import {
   type MotionValue,
 } from "motion/react";
 import { cn } from "@/lib/utils";
+import { useReduced } from "@/lib/a11y";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -34,7 +34,7 @@ export function ScrollProgress() {
 
 /** Words rise one by one from behind a mask when scrolled into view. */
 export function WordsReveal({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const words = text.split(" ");
   return (
     <span className={className}>
@@ -63,7 +63,7 @@ export function WordsReveal({ text, className, delay = 0 }: { text: string; clas
 /** A pinned sentence whose words light up as the page scrolls past. */
 export function ScrollHighlight({ text, glowFrom }: { text: string; glowFrom: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const words = text.split(" ");
   return (
@@ -110,7 +110,7 @@ function Word({
 /** Pulls its child toward the pointer. */
 export function Magnetic({ children, strength = 0.3, className }: { children: React.ReactNode; strength?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const x = useSpring(0, { stiffness: 220, damping: 16, mass: 0.4 });
   const y = useSpring(0, { stiffness: 220, damping: 16, mass: 0.4 });
   return (
@@ -137,7 +137,7 @@ export function Magnetic({ children, strength = 0.3, className }: { children: Re
 /** Tilts toward the pointer in 3D. */
 export function Tilt({ children, className, max = 7 }: { children: React.ReactNode; className?: string; max?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const rx = useSpring(0, { stiffness: 200, damping: 20 });
   const ry = useSpring(0, { stiffness: 200, damping: 20 });
   return (
@@ -172,7 +172,7 @@ const wrap = (min: number, max: number, v: number) => {
 
 /** Marquee row that speeds up and flips direction with scroll velocity. */
 export function VelocityRow({ children, baseVelocity }: { children: React.ReactNode; baseVelocity: number }) {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const velocity = useVelocity(scrollY);
@@ -259,7 +259,7 @@ export function StackCards({ items }: { items: React.ReactNode[] }) {
 }
 
 function StackCard({ children, i, n, progress }: { children: React.ReactNode; i: number; n: number; progress: MotionValue<number> }) {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const scale = useTransform(progress, [i / n, 1], [1, 1 - (n - 1 - i) * 0.035]);
   const brightness = useTransform(progress, [i / n, 1], [1, 1 - (n - 1 - i) * 0.08]);
   const filter = useTransform(brightness, (b) => `brightness(${b})`);
@@ -275,7 +275,7 @@ function StackCard({ children, i, n, progress }: { children: React.ReactNode; i:
 /** Section background that opens from a rounded window to full bleed as it scrolls in. */
 export function ClipReveal({ children, className }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "start 15%"] });
   const inset = useTransform(scrollYProgress, [0, 1], [12, 0]);
   const radius = useTransform(scrollYProgress, [0, 1], [48, 0]);
@@ -290,7 +290,7 @@ export function ClipReveal({ children, className }: { children: React.ReactNode;
 /** Moves its child vertically at a different speed than the page. */
 export function Parallax({ children, offset = 80, className }: { children: React.ReactNode; offset?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [offset, -offset]);
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { Bell, Check, CreditCard, TrendingUp } from "lucide-react";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { Aurora, Badge, CtaButton, Logo, NumberTicker, Reveal } from "./primitives";
@@ -9,6 +9,7 @@ import { Magnetic, VelocityRow } from "./motion";
 import { SilkBackground } from "./silk";
 import { nav, stats, tech, ticker } from "@/content";
 import { cn } from "@/lib/utils";
+import { useReduced } from "@/lib/a11y";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -47,7 +48,7 @@ export function Header() {
 }
 
 export function Hero() {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const stage = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: stage, offset: ["start end", "start 25%"] });
   const rotateX = useTransform(scrollYProgress, [0, 1], [reduced ? 0 : 28, 0]);

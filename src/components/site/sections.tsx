@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from "motion/react";
+import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { AppWindow, ArrowLeft, BarChart3, Check, Eye, KeyRound, Lock, MessageCircle, RefreshCw, ShieldCheck, Smartphone } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
 import { Aurora, GlowCard, Reveal, SectionHead } from "./primitives";
 import { HorizontalScroll, StackCards, Tilt } from "./motion";
 import { commitments, faq, monthly, services, steps, tickets } from "@/content";
 import { cn } from "@/lib/utils";
+import { useReduced } from "@/lib/a11y";
 
 const wrap = "mx-auto max-w-[1180px] px-4 sm:px-6";
 const section = "relative py-[clamp(80px,11vw,140px)]";
@@ -88,7 +89,7 @@ function PhoneVisual() {
 }
 
 function ChartVisual() {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   return (
     <div aria-hidden className="mt-6 flex h-28 items-end gap-2">
       {[30, 55, 42, 70, 58, 88, 76, 100].map((h, i) => (
@@ -107,7 +108,7 @@ function ChartVisual() {
 }
 
 function ChatVisual() {
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const msgs = [
     { me: false, t: "היי שירן, תזכורת לתור מחר ב־13:15 💅" },
     { me: true, t: "מגיעה, תודה!" },
@@ -188,7 +189,7 @@ export function Services() {
 export function ProblemPicker() {
   const [active, setActive] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const t = tickets[active];
 
   const onKey = (e: React.KeyboardEvent, i: number) => {

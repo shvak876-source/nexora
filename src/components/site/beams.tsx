@@ -1,10 +1,11 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { motion, useInView } from "motion/react";
 import { AppWindow, BarChart3, CreditCard, MapPin, MessageCircle, Smartphone } from "lucide-react";
 import { SectionHead } from "./primitives";
 import { cn } from "@/lib/utils";
+import { useReduced } from "@/lib/a11y";
 
 const nodes = [
   { icon: AppWindow, label: "אתר", note: "פנייה חדשה" },
@@ -87,7 +88,7 @@ export function Connections() {
   const items = useRef<(HTMLDivElement | null)[]>([]);
   const paths = useBeamPaths(container, hub, items);
   const inView = useInView(container, { once: true, margin: "-120px" });
-  const reduced = useReducedMotion();
+  const reduced = useReduced();
   const side = (from: number) => nodes.slice(from, from + 3);
 
   return (
