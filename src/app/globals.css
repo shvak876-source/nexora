@@ -1,26 +1,153 @@
 @import "tailwindcss";
 
+/* Design system from UI UX Pro Max: Glassmorphism + Aurora UI on an OLED-dark base,
+   electric blue / violet glow with an orange CTA (complementary pair). Dark only. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #05060b;
+  --foreground: #f5f7fb;
+  --card: #0b0f1a;
+  --muted: #121829;
+  --muted-foreground: #9aa6bd;
+  --border: rgb(255 255 255 / 0.1);
+  --primary: #60a5fa;
+  --on-primary: #05060b;
+  --blue: #3b82f6;
+  --violet: #8b5cf6;
+  --cyan: #22d3ee;
+  --accent: #f97316;
+  --on-accent: #0b0b0b;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --danger: #f87171;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-blue: var(--blue);
+  --color-violet: var(--violet);
+  --color-cyan: var(--cyan);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-display: var(--font-heading), var(--font-body), system-ui, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection { background: color-mix(in srgb, var(--blue) 45%, transparent); }
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* ---------- glass ---------- */
+.glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ---------- gradient text ---------- */
+.text-glow {
+  background: linear-gradient(100deg, #93c5fd 0%, #a78bfa 35%, #f0abfc 55%, #fdba74 80%, #93c5fd 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 8s linear infinite;
+  filter: drop-shadow(0 0 28px rgb(139 92 246 / 0.35));
+}
+.text-fade {
+  background: linear-gradient(180deg, #fff 30%, rgb(255 255 255 / 0.55));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes shine { to { background-position: -200% center; } }
+
+/* ---------- border beam ---------- */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.beam { position: relative; isolation: isolate; }
+.beam::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--beam-angle), transparent 0 68%, var(--cyan) 78%, var(--violet) 88%, var(--accent) 94%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: beam-spin 6s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+@keyframes beam-spin { to { --beam-angle: 360deg; } }
+
+/* ---------- shimmer CTA ---------- */
+.shimmer { position: relative; overflow: hidden; isolation: isolate; }
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: sweep 3.2s ease-in-out infinite;
+  z-index: -1;
+}
+@keyframes sweep { 0%, 40% { transform: translateX(120%); } 100% { transform: translateX(-120%); } }
+
+/* ---------- aurora ---------- */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+@keyframes drift-a { 50% { transform: translate3d(-12%, 8%, 0) scale(1.15); } }
+@keyframes drift-b { 50% { transform: translate3d(14%, -6%, 0) scale(0.9); } }
+@keyframes drift-c { 50% { transform: translate3d(-6%, -10%, 0) scale(1.2); } }
+
+@keyframes marquee { to { transform: translateX(50%); } }
+@keyframes marquee-rev { from { transform: translateX(50%); } to { transform: translateX(0); } }
+@keyframes float { 50% { transform: translateY(-10px); } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(52 211 153 / 0.6); } 100% { box-shadow: 0 0 0 10px rgb(52 211 153 / 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
